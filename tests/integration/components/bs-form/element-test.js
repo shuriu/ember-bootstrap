@@ -34,7 +34,8 @@ const supportedInputAttributes = {
   multiple: [true, 'multiple'],
   step: [50, 50],
   form: ['dummy', 'dummy'],
-  spellcheck: [true, 'true']
+  spellcheck: [true, 'true'],
+  title: ['dummy', 'dummy']
 };
 const supportedTextareaAttributes = {
   name: ['dummy', 'dummy'],
@@ -51,7 +52,8 @@ const supportedTextareaAttributes = {
   autocomplete: ['on', 'on'],
   form: ['dummy', 'dummy'],
   spellcheck: [true, 'true'],
-  wrap: ['hard', 'hard']
+  wrap: ['hard', 'hard'],
+  title: ['dummy', 'dummy']
 };
 const supportedCheckboxAttributes = {
   name: ['dummy', 'dummy'],
@@ -60,7 +62,8 @@ const supportedCheckboxAttributes = {
   disabled: [true, 'disabled'],
   autofocus: [true, 'autofocus'],
   tabindex: [50, 50],
-  form: ['dummy', 'dummy']
+  form: ['dummy', 'dummy'],
+  title: ['dummy', 'dummy']
 };
 
 test('component has form-group bootstrap class', function(assert) {
@@ -250,6 +253,7 @@ test('supported input attributes propagate', function(assert) {
       step=step
       form=form
       spellcheck=spellcheck
+      title=title
     }}`);
 
     for (let attribute in supportedInputAttributes) {
@@ -286,6 +290,7 @@ test('supported textarea attributes propagate', function(assert) {
       form=form
       spellcheck=spellcheck
       wrap=wrap
+      title=title
     }}`);
 
     for (let attribute in supportedTextareaAttributes) {
@@ -313,6 +318,7 @@ test('supported checkbox attributes propagate', function(assert) {
       autofocus=autofocus
       tabindex=tabindex
       form=form
+      title=title
     }}`);
 
     for (let attribute in supportedCheckboxAttributes) {
@@ -427,11 +433,25 @@ testBS3('adjusts validation icon position if there is an input group', function(
   );
 });
 
+test('shows validation state only when validator is present', function(assert) {
+  this.set('model', Ember.Object.create({ name: null, validate() {} }));
+  this.render(hbs`
+      {{bs-form/element property='name' model=model}}
+  `);
+  Ember.run(() => {
+    this.$('input').trigger('focusout');
+  });
+  assert.notOk(
+    this.$('.form-group').hasClass('has-success'),
+    'form group isn\'t shown as having errors if there is no validator'
+  );
+});
+
 test('shows validation errors', function(assert) {
   this.set('errors', Ember.A(['Invalid']));
   this.set('model', Ember.Object.create({ name: null }));
   this.render(hbs`
-      {{bs-form/element property='name' elementId='child' hasValidator=true errors=errors model=model}}
+      {{bs-form/element property='name' hasValidator=true errors=errors model=model}}
   `);
   assert.notOk(
     this.$('.form-group').hasClass(validationErrorClass()),
@@ -442,7 +462,7 @@ test('shows validation errors', function(assert) {
   });
   assert.ok(
     this.$('.form-group').hasClass(validationErrorClass()),
-    'validation errors are shown after user interaction when errors are present (child)'
+    'validation errors are shown after user interaction when errors are present'
   );
   assert.equal(this.$(`.form-group .${formFeedbackClass()}`).text().trim(), 'Invalid');
   Ember.run(() => {
@@ -458,7 +478,7 @@ test('shows validation warnings', function(assert) {
   this.set('warnings', Ember.A(['Insecure']));
   this.set('model', Ember.Object.create({ name: null }));
   this.render(hbs`
-      {{bs-form/element property='name' elementId='child' hasValidator=true warnings=warnings model=model}}
+      {{bs-form/element property='name' hasValidator=true warnings=warnings model=model}}
   `);
   assert.notOk(
     this.$('.form-group').hasClass('has-warning'),
@@ -485,7 +505,7 @@ test('shows custom error immediately', function(assert) {
   this.set('model', Ember.Object.create({ name: null }));
   this.set('error', 'some error');
   this.render(hbs`
-      {{bs-form/element property='name' elementId='child' hasValidator=true customError=error model=model}}
+      {{bs-form/element property='name' hasValidator=true customError=error model=model}}
   `);
   assert.ok(
     this.$('.form-group').hasClass(validationErrorClass()),
@@ -506,7 +526,7 @@ test('events enabling validation rendering are configurable per `showValidationO
   this.set('model', Ember.Object.create({ name: null }));
   this.set('showValidationOn', ['change']);
   this.render(hbs`
-      {{bs-form/element property='name' elementId='child' hasValidator=true errors=errors model=model showValidationOn=showValidationOn}}
+      {{bs-form/element property='name' hasValidator=true errors=errors model=model showValidationOn=showValidationOn}}
   `);
   assert.notOk(
     this.$('.form-group').hasClass(validationErrorClass()),
@@ -532,7 +552,7 @@ test('events enabling validation rendering are configurable per `showValidationO
   this.set('errors', Ember.A(['Invalid']));
   this.set('model', Ember.Object.create({ name: null }));
   this.render(hbs`
-      {{bs-form/element property='name' elementId='child' hasValidator=true errors=errors model=model showValidationOn='change'}}
+      {{bs-form/element property='name' hasValidator=true errors=errors model=model showValidationOn='change'}}
   `);
   assert.notOk(
     this.$('.form-group').hasClass(validationErrorClass()),

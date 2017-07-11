@@ -303,6 +303,12 @@ const nonDefaultLayouts = A([
  <td>✔︎</td>
  </tr>
  <tr>
+ <td>title</td>
+ <td>✔︎</td>
+ <td>✔︎</td>
+ <td>✔︎</td>
+ </tr>
+ <tr>
  <td>wrap</td>
  <td>✔︎</td>
  <td></td>
@@ -409,7 +415,7 @@ export default FormGroup.extend({
    *
    * @property errors
    * @type array
-   * @private
+   * @protected
    */
   errors: null,
 
@@ -426,7 +432,7 @@ export default FormGroup.extend({
    *
    * @property errors
    * @type array
-   * @private
+   * @protected
    */
   warnings: null,
 
@@ -487,10 +493,10 @@ export default FormGroup.extend({
   /**
    * @property hasValidator
    * @type boolean
-   * @readonly
-   * @private
+   * @default false
+   * @protected
    */
-  hasValidator: computed.notEmpty('model.validate'),
+  hasValidator: false,
 
   /**
    * Set a validating state for async validations
@@ -498,7 +504,7 @@ export default FormGroup.extend({
    * @property isValidating
    * @type boolean
    * @default false
-   * @public
+   * @protected
    */
   isValidating: false,
 
@@ -664,7 +670,7 @@ export default FormGroup.extend({
    * @type {String}
    * @private
    */
-  controlComponent: computed('formLayout', 'controlType', function() {
+  controlComponent: computed('controlType', function() {
     let controlType = this.get('controlType');
     if (!nonTextFieldControlTypes.includes(controlType)) {
       controlType = 'input';

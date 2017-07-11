@@ -28,6 +28,16 @@ test('dropdown container with dropdown button has btn-group class', function(ass
   }, 0);
 });
 
+test('dropdown container with block dropdown button has dropdown class', function(assert) {
+  this.render(hbs`{{#bs-dropdown as |dd|}}{{#dd.button block=true}}Dropdown <span class="caret"></span>{{/dd.button}}{{#dd.menu}}<li><a href="#">Something</a></li>{{/dd.menu}}{{/bs-dropdown}}`);
+  let done = assert.async();
+  // timeout is needed as class is set in next run loop
+  setTimeout(() => {
+    assert.equal(this.$(':first-child').hasClass('dropdown'), true, 'has dropdown class');
+    done();
+  }, 0);
+});
+
 test('dropdown container with dropdown button supports dropup style', function(assert) {
   this.render(hbs`{{#bs-dropdown direction="up" as |dd|}}{{#dd.button}}Dropdown <span class="caret"></span>{{/dd.button}}{{#dd.menu}}<li><a href="#">Something</a></li>{{/dd.menu}}{{/bs-dropdown}}`);
   let done = assert.async();
@@ -75,6 +85,16 @@ test('clicking dropdown menu when closeOnMenuClick is false will not close it', 
 
   this.$('ul.dropdown-menu a').click();
   assert.equal(this.$(':first-child').hasClass(openClass()), true, 'Dropdown is open');
+});
+
+test('child components can access isOpen property', function(assert) {
+  this.render(hbs`{{#bs-dropdown as |dd|}}{{#dd.toggle}}<span id="toggleText">{{if dd.isOpen "open" "closed"}}</span>{{/dd.toggle}}{{/bs-dropdown}}`);
+
+  assert.equal(this.$('#toggleText').text(), 'closed', 'Dropdown is closed');
+  this.$('a.dropdown-toggle').click();
+  assert.equal(this.$('#toggleText').text(), 'open', 'Dropdown is open');
+  this.$('a.dropdown-toggle').click();
+  assert.equal(this.$('#toggleText').text(), 'closed', 'Dropdown is closed');
 });
 
 test('opening dropdown calls onShow action', function(assert) {

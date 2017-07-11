@@ -6,10 +6,7 @@ node_js:
 sudo: false
 
 cache:
-  directories:
-    - node_modules
-    - $HOME/.yarn-cache
-    - $HOME/.cache # includes bowers cache
+  yarn: true
 
 env:
   - EMBER_TRY_SCENARIO=ember-2.3
@@ -28,6 +25,7 @@ env:
   - EMBER_TRY_SCENARIO=ember-release-bs4
   - EMBER_TRY_SCENARIO=ember-beta-bs4
   - EMBER_TRY_SCENARIO=fastboot-addon-tests
+  - EMBER_TRY_SCENARIO=blueprint-tests
 
 matrix:
   fast_finish: true
@@ -35,17 +33,19 @@ matrix:
     - env: EMBER_TRY_SCENARIO=ember-canary
 
 before_install:
+  - if [[ `npm -v` != 3* ]]; then npm i -g npm@3; fi
   - npm config set spin false
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH=$HOME/.yarn/bin:$PATH
   - yarn global add phantomjs-prebuilt
   - yarn global add bower
+  - npm --version
   - yarn --version
   - bower --version
   - phantomjs --version
 
 install:
-  - yarn install
+  - yarn install --no-lockfile
   - bower install
 
 script:
